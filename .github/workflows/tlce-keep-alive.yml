@@ -1,10 +1,8 @@
 name: Scheduled Keep-Alive Ping
-
 on:
   schedule:
     - cron: '*/12 * * * *'
   workflow_dispatch:
-
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -15,4 +13,19 @@ jobs:
             echo "❌ ERROR: Secret 'TRANSLX_URL' is missing from GitHub Settings"
             exit 1
           fi
-          curl -v -L -o /dev/null -s -H "User-Agent: GitHubAction-KeepAlive" "${{ secrets.TRANSLX_URL }}"
+          
+          echo "🔄 Pinging: ${{ secrets.TRANSLX_URL }}"
+          
+          # Remove -s to see errors, add --fail to exit on HTTP errors
+          curl -v -L -o /dev/null \
+            --fail \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "User-Agent: GitHubAction-KeepAlive" \
+            "${{ secrets.TRANSLX_URL }}" || {
+              echo "❌ Curl failed with exit code: $?"
+              exit 1
+            }
+          
+          echo "✅ Ping successful"
