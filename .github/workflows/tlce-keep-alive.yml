@@ -12,5 +12,5 @@ jobs:
      steps:
         - name: Send Request
           run: |
-            curl -I -s -H "User-Agent: GitHubAction-KeepAlive" ${{ secrets.TARGET_URL }}
+            curl -I -s -H "User-Agent: GitHubAction-KeepAlive" ${{ secrets.TRANSLX_URL }}
 
