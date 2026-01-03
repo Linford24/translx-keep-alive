@@ -8,24 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Request
+        env:
+          TRANSLX_URL: ${{ secrets.TRANSLX_URL }}
         run: |
-          if [ -z "${{ secrets.TRANSLX_URL }}" ]; then
-            echo "❌ ERROR: Secret 'TRANSLX_URL' is missing from GitHub Settings"
+          if [ -z "$TRANSLX_URL" ]; then
+            echo "❌ ERROR: Secret 'TRANSLX_URL' is not set"
             exit 1
           fi
           
-          echo "🔄 Pinging: ${{ secrets.TRANSLX_URL }}"
-          
-          # Remove -s to see errors, add --fail to exit on HTTP errors
-          curl -v -L -o /dev/null \
-            --fail \
-            --retry 3 \
-            --retry-delay 5 \
-            --max-time 30 \
-            -H "User-Agent: GitHubAction-KeepAlive" \
-            "${{ secrets.TRANSLX_URL }}" || {
-              echo "❌ Curl failed with exit code: $?"
-              exit 1
-            }
-          
+          echo "🔄 Pinging URL..."
+          curl -I -L -H "User-Agent: GitHubAction-KeepAlive" "$TRANSLX_URL"
           echo "✅ Ping successful"
