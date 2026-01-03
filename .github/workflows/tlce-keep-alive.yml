@@ -1,7 +1,7 @@
 name: Scheduled Keep-Alive Ping
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/12 * * * *'
   workflow_dispatch:
 jobs:
   ping:
@@ -17,5 +17,9 @@ jobs:
           fi
           
           echo "🔄 Pinging URL..."
-          curl -I -L -H "User-Agent: GitHubAction-KeepAlive" "$TRANSLX_URL"
+          curl -I -L -v -H "User-Agent: GitHubAction-KeepAlive" "$TRANSLX_URL" 2>&1 || {
+            echo ""
+            echo "❌ Curl failed. Retrying with --insecure..."
+            curl -I -L --insecure -H "User-Agent: GitHubAction-KeepAlive" "$TRANSLX_URL"
+          }
           echo "✅ Ping successful"
