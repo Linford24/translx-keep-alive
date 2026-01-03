@@ -12,5 +12,9 @@ jobs:
      steps:
         - name: Send Request
           run: |
-            curl -I -s -H "User-Agent: GitHubAction-KeepAlive" ${{ secrets.TRANSLX_URL }}
+            if [ -z "${{ secrets.TRANSLX_URL }}" ]; then
+              echo "❌ ERROR: Secret 'TRANSLX_URL' not found or empty."
+              exit 1
+            fi
+            curl -I -s -H "User-Agent: GitHubAction-KeepAlive" "${{ secrets.TRANSLX_URL }}"
 
